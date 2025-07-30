@@ -1,0 +1,26 @@
+{
+  "name": "katnip-cloudflare",
+  "version": "6.0.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {},
+  "keywords": [
+    "katnip-plugin"
+  ],
+  "exports": {
+    "./katnip-project-hooks": {
+      "node": "./katnip-cloudflare-project.js"
+    },
+    "./katnip-server-hooks": {
+      "workerd": "./katnip-cloudflare-server.js"
+    }
+  },
+  "dependencies": {
+    "katnip": "^6.0.0",
+    "string-argv": "^0.3.2",
+    "wrangler": "^4.26.0"
+  },
+  "peerDependencies": {
+    "katnip": "^6.0.0"
+  }
+}
