@@ -8,18 +8,18 @@ import {cloudflareGetBinding, cloudflareAddBinding, wranglerD1Create, wranglerR2
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export async function initCli(ev) {
+/*export async function initCli(ev) {
 	ev.target.eventCommand("provision")
 		.option("--local","Provision local env.")
 		.option("--remote","Provision remote env.");
-}
+}*/
 
 export async function provision(ev) {
 	if (ev.target.platform!="cloudflare")
 		return;
 
-	if (!ev.local && !ev.remote)
-		throw new DeclaredError("Need --local or --remote for cloudflare provision.");
+	/*if (!ev.local && !ev.remote)
+		throw new DeclaredError("Need --local or --remote for cloudflare provision.");*/
 
 	if (!await ev.isDatabaseUsed())
 		return;
@@ -50,7 +50,7 @@ export async function provision(ev) {
 		}
 	});
 
-	if (ev.remote) {
+	if (ev.target.mode=="prod") {
 		if (wrangler.d1_databases) {
 			for (let database of wrangler.d1_databases) {
 				if (String(database.database_id)=="undefined") {
@@ -89,8 +89,8 @@ export async function provision(ev) {
 	ev.qqlFactory=async ()=>{
         return new QqlDriverWrangler({
         	d1Binding: "DB",
-            local: ev.local,
-            remote: ev.remote,
+            local: (ev.target.mode=="dev"),
+            remote: (ev.target.mode=="prod"),
             wranglerJsonPath: path.join(ev.target.cwd,"wrangler.json"),
             wranglerBin: await findNodeBin(__dirname,"wrangler"),
             wranglerEnv: ev.target.env
