@@ -8,11 +8,19 @@ import {cloudflareGetBinding, cloudflareAddBinding, wranglerD1Create, wranglerR2
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/*export async function initCli(ev) {
-	ev.target.eventCommand("provision")
-		.option("--local","Provision local env.")
-		.option("--remote","Provision remote env.");
-}*/
+export async function createDatabaseQqlDriver(ev) {
+	if (ev.env.DATABASE_URL)
+		return;
+
+    return new QqlDriverWrangler({
+    	d1Binding: "DB",
+        local: (ev.target.mode=="dev"),
+        remote: (ev.target.mode=="prod"),
+        wranglerJsonPath: path.join(ev.target.cwd,"wrangler.json"),
+        wranglerBin: await findNodeBin(__dirname,"wrangler"),
+        wranglerEnv: ev.target.env
+    });
+}
 
 export async function provision(ev) {
 	if (ev.target.platform!="cloudflare")
@@ -85,17 +93,6 @@ export async function provision(ev) {
 			}
 		}
 	}
-
-	ev.qqlFactory=async ()=>{
-        return new QqlDriverWrangler({
-        	d1Binding: "DB",
-            local: (ev.target.mode=="dev"),
-            remote: (ev.target.mode=="prod"),
-            wranglerJsonPath: path.join(ev.target.cwd,"wrangler.json"),
-            wranglerBin: await findNodeBin(__dirname,"wrangler"),
-            wranglerEnv: ev.target.env
-        });
-	}
 }
 
 async function initWranglerJson(ev) {
@@ -145,10 +142,6 @@ export async function build(buildEvent) {
 		return;
 
 	await initWranglerJson(buildEvent);
-
-	let resourceFactoryPath=path.join(__dirname,"katnip-cloudflare-resources.js");
-	buildEvent.registerQqlFactory(resourceFactoryPath,"createCloudflareQqlDriver");
-	buildEvent.registerStorageFactory(resourceFactoryPath,"createCloudflareStorageDriver");
 
 	let importStatements=[];
 	let importModuleNames=[];
