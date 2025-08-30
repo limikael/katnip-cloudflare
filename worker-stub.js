@@ -11,6 +11,18 @@ import {KatnipServer} from "katnip";
 $$WORKER_DATA$$
 
 let serverMap=new Map();
+function getEnvServer(env) {
+	if (!serverMap.get(env)) {
+		let envConf={...workerData.env,...env};
+		serverMap.set(env,new KatnipServer({
+			modules: workerData.modules,
+			importModules: workerData.importModules,
+			env: envConf
+		}));
+	}
+
+	return serverMap.get(env);
+}
 
 export default {
 	async fetch(request, env, ctx) {
@@ -21,18 +33,13 @@ export default {
 	    	}
 		}
 
-		if (!serverMap.get(env)) {
-			let envConf={...workerData.env,...env};
-
-			serverMap.set(env,new KatnipServer({
-				modules: workerData.modules,
-				importModules: workerData.importModules,
-				env: envConf
-			}));
-		}
-
-		let server=serverMap.get(env);
+		let server=getEnvServer(env);
 		return await server.handleRequest({request,ctx});
-	}
+	},
+
+	async scheduled(controller, env, ctx) {
+		let server=getEnvServer(env);
+		return await server.handleScheduled({cron: controller.cron, ctx});
+	},
 }
 `;

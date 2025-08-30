@@ -189,7 +189,8 @@ export async function dev(ev) {
 		"dev",
 		"--no-live-reload",
 		"--cwd",ev.target.cwd,
-		"--port",ev.port
+		"--port",ev.port,
+		"--test-scheduled"
 	],options);
 }
 
