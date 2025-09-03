@@ -15,10 +15,11 @@ export async function createDatabaseQqlDriver(ev) {
     return new QqlDriverWrangler({
     	d1Binding: "DB",
         local: (ev.target.mode=="dev"),
-        remote: (ev.target.mode=="prod"),
+        remote: (["prod","staging"].includes(ev.target.mode)),
         wranglerJsonPath: path.join(ev.target.cwd,"wrangler.json"),
         wranglerBin: await findNodeBin(__dirname,"wrangler"),
-        wranglerEnv: ev.target.env
+        wranglerEnv: ev.target.env,
+        env: (ev.target.mode!="prod"?ev.target.mode:undefined)
     });
 }
 
@@ -202,8 +203,13 @@ export async function deploy(ev) {
 		expect: 0,
 	}
 
-	return await runCommand("wrangler",[
+	let wranglerOptions=[
 		"deploy",
 		"--cwd",project.cwd,
-	],options);
+	];
+
+	if (ev.target.mode!="prod")
+		wranglerOptions.push("--env",ev.target.mode);
+
+	return await runCommand("wrangler",wranglerOptions,options);
 }
