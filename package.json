@@ -1,5 +1,6 @@
 {
   "name": "katnip-cloudflare",
+  "dependencies": "Enables cloudflare build and deployment for katnip projects.",
   "version": "6.0.12",
   "license": "MIT",
   "type": "module",
