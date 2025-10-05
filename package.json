@@ -1,11 +1,11 @@
 {
   "name": "katnip-cloudflare",
   "dependencies": {
-    "katnip": "^6.0.19",
+    "katnip": "^6.0.20",
     "string-argv": "^0.3.2",
     "wrangler": "^4.26.0"
   },
-  "version": "6.0.14",
+  "version": "6.0.15",
   "license": "MIT",
   "type": "module",
   "scripts": {},
